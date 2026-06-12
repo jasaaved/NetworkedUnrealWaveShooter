@@ -8,11 +8,13 @@
 #include "ShooterWeaponHolder.h"
 #include "ShooterWeapon.h"
 #include "Engine/World.h"
+#include "Net/UnrealNetwork.h"
 #include "TimerManager.h"
 
 AShooterPickup::AShooterPickup()
 {
  	PrimaryActorTick.bCanEverTick = true;
+	bReplicates = true;
 
 	// create the root
 	RootComponent = CreateDefaultSubobject<USceneComponent>(TEXT("Root"));
@@ -68,34 +70,34 @@ void AShooterPickup::EndPlay(const EEndPlayReason::Type EndPlayReason)
 	GetWorld()->GetTimerManager().ClearTimer(RespawnTimer);
 }
 
+void AShooterPickup::GetLifetimeReplicatedProps(TArray<FLifetimeProperty>& OutLifetimeProps) const
+{
+	Super::GetLifetimeReplicatedProps(OutLifetimeProps);
+	DOREPLIFETIME(AShooterPickup, bPickedUp);
+}
+
 void AShooterPickup::OnOverlap(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult)
 {
+	if (!HasAuthority())
+	{
+		return;
+	}
 	// have we collided against a weapon holder?
 	if (IShooterWeaponHolder* WeaponHolder = Cast<IShooterWeaponHolder>(OtherActor))
 	{
 		WeaponHolder->AddWeaponClass(WeaponClass);
 
-		// hide this mesh
-		SetActorHiddenInGame(true);
-
-		// disable collision
-		SetActorEnableCollision(false);
-
-		// disable ticking
-		SetActorTickEnabled(false);
-
 		// schedule the respawn
 		GetWorld()->GetTimerManager().SetTimer(RespawnTimer, this, &AShooterPickup::RespawnPickup, RespawnTime, false);
+		bPickedUp = true;
+		OnRep_PickedUp();
 	}
 }
 
 void AShooterPickup::RespawnPickup()
 {
-	// unhide this pickup
-	SetActorHiddenInGame(false);
-
-	// call the BP handler
-	BP_OnRespawn();
+	bPickedUp = false;
+	OnRep_PickedUp();
 }
 
 void AShooterPickup::FinishRespawn()
@@ -105,4 +107,18 @@ void AShooterPickup::FinishRespawn()
 
 	// enable tick
 	SetActorTickEnabled(true);
+}
+
+void AShooterPickup::OnRep_PickedUp()
+{
+	if (bPickedUp) {
+		SetActorHiddenInGame(true);
+		SetActorEnableCollision(false);
+		SetActorTickEnabled(false);
+	}
+	else {
+		SetActorHiddenInGame(false);
+		BP_OnRespawn();
+	}
+		
 }
