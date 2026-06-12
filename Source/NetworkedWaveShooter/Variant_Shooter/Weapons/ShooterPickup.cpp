@@ -107,11 +107,13 @@ void AShooterPickup::FinishRespawn()
 
 	// enable tick
 	SetActorTickEnabled(true);
+	SpinOffset = GetWorld()->GetTimeSeconds() - SpinOffset;
 }
 
 void AShooterPickup::OnRep_PickedUp()
 {
 	if (bPickedUp) {
+		SpinOffset = GetWorld()->GetTimeSeconds() - SpinOffset;
 		SetActorHiddenInGame(true);
 		SetActorEnableCollision(false);
 		SetActorTickEnabled(false);

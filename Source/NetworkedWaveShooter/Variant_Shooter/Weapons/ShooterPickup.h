@@ -58,6 +58,10 @@ protected:
 	UPROPERTY(EditAnywhere, Category="Pickup", meta = (ClampMin = 0, ClampMax = 120, Units = "s"))
 	float RespawnTime = 4.0f;
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Pickup")
+	float SpinOffset = 0.0f;
+	// REPLICATION //
+
 	UPROPERTY(ReplicatedUsing = OnRep_PickedUp)
 	bool bPickedUp = false;
 
