@@ -8,12 +8,12 @@
 #include "ShooterCharacter.generated.h"
 
 class AShooterWeapon;
+class UHealthComponent;
 class UInputAction;
 class UInputComponent;
 class UPawnNoiseEmitterComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBulletCountUpdatedDelegate, int32, MagazineSize, int32, Bullets);
-DECLARE_DYNAMIC_MULTICAST_DELEGATE_OneParam(FDamagedDelegate, float, LifePercent);
 
 /**
  *  A player controllable first person shooter character
@@ -28,6 +28,9 @@ class NETWORKEDWAVESHOOTER_API AShooterCharacter : public ANetworkedWaveShooterC
 	/** AI Noise emitter component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter;
+public:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UHealthComponent* HealthComponent;
 
 protected:
 
@@ -50,13 +53,6 @@ protected:
 	/** Max distance to use for aim traces */
 	UPROPERTY(EditAnywhere, Category ="Aim", meta = (ClampMin = 0, ClampMax = 100000, Units = "cm"))
 	float MaxAimDistance = 10000.0f;
-
-	/** Max HP this character can have */
-	UPROPERTY(EditAnywhere, Category="Health")
-	float MaxHP = 500.0f;
-
-	/** Current HP remaining to this character */
-	float CurrentHP = 0.0f;
 
 	/** Team ID for this character*/
 	UPROPERTY(EditAnywhere, Category="Team")
@@ -81,13 +77,12 @@ protected:
 
 	FTimerHandle RespawnTimer;
 
+	
+
 public:
 
 	/** Bullet count updated delegate */
 	FBulletCountUpdatedDelegate OnBulletCountUpdated;
-
-	/** Damaged delegate */
-	FDamagedDelegate OnDamaged;
 
 public:
 
@@ -175,6 +170,7 @@ protected:
 	AShooterWeapon* FindWeaponOfType(TSubclassOf<AShooterWeapon> WeaponClass) const;
 
 	/** Called when this character's HP is depleted */
+	UFUNCTION()
 	void Die();
 
 	/** Called to allow Blueprint code to react to this character's death */

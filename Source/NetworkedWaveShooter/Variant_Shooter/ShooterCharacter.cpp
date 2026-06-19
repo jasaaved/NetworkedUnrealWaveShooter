@@ -11,6 +11,8 @@
 #include "Components/CapsuleComponent.h"
 #include "Engine/World.h"
 #include "Camera/CameraComponent.h"
+#include "Net/UnrealNetwork.h"
+#include "HealthComponent.h"
 #include "TimerManager.h"
 #include "ShooterGameMode.h"
 
@@ -18,6 +20,7 @@ AShooterCharacter::AShooterCharacter()
 {
 	// create the noise emitter component
 	PawnNoiseEmitter = CreateDefaultSubobject<UPawnNoiseEmitterComponent>(TEXT("Pawn Noise Emitter"));
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
 
 	// configure movement
 	GetCharacterMovement()->RotationRate = FRotator(0.0f, 600.0f, 0.0f);
@@ -26,12 +29,7 @@ AShooterCharacter::AShooterCharacter()
 void AShooterCharacter::BeginPlay()
 {
 	Super::BeginPlay();
-
-	// reset HP to max
-	CurrentHP = MaxHP;
-
-	// update the HUD
-	OnDamaged.Broadcast(1.0f);
+	HealthComponent->OnDeath.AddDynamic(this, &AShooterCharacter::Die);
 }
 
 void AShooterCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
@@ -41,6 +39,7 @@ void AShooterCharacter::EndPlay(EEndPlayReason::Type EndPlayReason)
 	// clear the respawn timer
 	GetWorld()->GetTimerManager().ClearTimer(RespawnTimer);
 }
+
 
 void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
 {
@@ -62,25 +61,7 @@ void AShooterCharacter::SetupPlayerInputComponent(UInputComponent* PlayerInputCo
 
 float AShooterCharacter::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	// ignore if already dead
-	if (CurrentHP <= 0.0f)
-	{
-		return 0.0f;
-	}
-
-	// Reduce HP
-	CurrentHP -= Damage;
-
-	// Have we depleted HP?
-	if (CurrentHP <= 0.0f)
-	{
-		Die();
-	}
-
-	// update the HUD
-	OnDamaged.Broadcast(FMath::Max(0.0f, CurrentHP / MaxHP));
-
-	return Damage;
+	return HealthComponent->HandleDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void AShooterCharacter::DoAim(float Yaw, float Pitch)
@@ -329,5 +310,5 @@ void AShooterCharacter::OnRespawn()
 bool AShooterCharacter::IsDead() const
 {
 	// the character is dead if their current HP drops to zero
-	return CurrentHP <= 0.0f;
+	return HealthComponent->IsDead();
 }

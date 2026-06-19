@@ -7,6 +7,7 @@
 #include "InputMappingContext.h"
 #include "Kismet/GameplayStatics.h"
 #include "GameFramework/PlayerStart.h"
+#include "HealthComponent.h"
 #include "ShooterCharacter.h"
 #include "ShooterBulletCounterUI.h"
 #include "NetworkedWaveShooter.h"
@@ -94,10 +95,10 @@ void AShooterPlayerController::OnPossess(APawn* InPawn)
 
 		// subscribe to the pawn's delegates
 		ShooterCharacter->OnBulletCountUpdated.AddDynamic(this, &AShooterPlayerController::OnBulletCountUpdated);
-		ShooterCharacter->OnDamaged.AddDynamic(this, &AShooterPlayerController::OnPawnDamaged);
+		ShooterCharacter->HealthComponent->OnDamaged.AddDynamic(this, &AShooterPlayerController::OnPawnDamaged);
 
 		// force update the life bar
-		ShooterCharacter->OnDamaged.Broadcast(1.0f);
+		ShooterCharacter->HealthComponent->OnDamaged.Broadcast(1.0f);
 	}
 }
 
