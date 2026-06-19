@@ -10,8 +10,13 @@
 #include "ShooterGameMode.h"
 #include "Components/CapsuleComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
+
+#include "HealthComponent.h"
 #include "TimerManager.h"
 
+AShooterNPC::AShooterNPC() {
+	HealthComponent = CreateDefaultSubobject<UHealthComponent>(TEXT("Health Component"));
+}
 void AShooterNPC::BeginPlay()
 {
 	Super::BeginPlay();
@@ -23,6 +28,8 @@ void AShooterNPC::BeginPlay()
 	SpawnParams.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
 
 	Weapon = GetWorld()->SpawnActor<AShooterWeapon>(WeaponClass, GetActorTransform(), SpawnParams);
+
+	HealthComponent->OnDeath.AddDynamic(this, &AShooterNPC::Die);
 }
 
 void AShooterNPC::EndPlay(const EEndPlayReason::Type EndPlayReason)
@@ -35,22 +42,7 @@ void AShooterNPC::EndPlay(const EEndPlayReason::Type EndPlayReason)
 
 float AShooterNPC::TakeDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser)
 {
-	// ignore if already dead
-	if (bIsDead)
-	{
-		return 0.0f;
-	}
-
-	// Reduce HP
-	CurrentHP -= Damage;
-
-	// Have we depleted HP?
-	if (CurrentHP <= 0.0f)
-	{
-		Die();
-	}
-
-	return Damage;
+	return HealthComponent->HandleDamage(Damage, DamageEvent, EventInstigator, DamageCauser);
 }
 
 void AShooterNPC::AttachWeaponMeshes(AShooterWeapon* WeaponToAttach)
@@ -150,15 +142,6 @@ void AShooterNPC::OnSemiWeaponRefire()
 
 void AShooterNPC::Die()
 {
-	// ignore if already dead
-	if (bIsDead)
-	{
-		return;
-	}
-
-	// raise the dead flag
-	bIsDead = true;
-
 	// grant the death tag to the character
 	Tags.Add(DeathTag);
 
@@ -212,3 +195,4 @@ void AShooterNPC::StopShooting()
 	// signal the weapon
 	Weapon->StopFiring();
 }
+

@@ -10,6 +10,7 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPawnDeathDelegate);
 
 class AShooterWeapon;
+class UHealthComponent;
 
 /**
  *  A simple AI-controlled shooter game NPC
@@ -20,12 +21,10 @@ UCLASS(abstract)
 class NETWORKEDWAVESHOOTER_API AShooterNPC : public ANetworkedWaveShooterCharacter, public IShooterWeaponHolder
 {
 	GENERATED_BODY()
-
 public:
 
-	/** Current HP for this character. It dies if it reaches zero through damage */
-	UPROPERTY(EditAnywhere, BlueprintReadOnly, Category="Damage")
-	float CurrentHP = 100.0f;
+	/** Constructor **/
+	AShooterNPC();
 
 protected:
 
@@ -82,14 +81,13 @@ protected:
 	/** If true, this character is currently shooting its weapon */
 	bool bIsShooting = false;
 
-	/** If true, this character has already died */
-	bool bIsDead = false;
-
 	/** Deferred destruction on death timer */
 	FTimerHandle DeathTimer;
 
 public:
 
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	UHealthComponent* HealthComponent;
 	/** Delegate called when this NPC dies */
 	FPawnDeathDelegate OnPawnDeath;
 
@@ -142,6 +140,7 @@ public:
 protected:
 
 	/** Called when HP is depleted and the character should die */
+	UFUNCTION()
 	void Die();
 
 	/** Called after death to destroy the actor */

@@ -31,8 +31,11 @@ protected:
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Replicated, Category = "Health")
 	float MaxHealth = 500.0f;
 
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentHealth, Category = "Health")
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, ReplicatedUsing = OnRep_CurrentHealth, Category = "Health", meta = (AllowPrivateAccess = "true"))
 	float CurrentHealth = 0.0f;
+
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Replicated, Category = "Health", meta = (AllowPrivateAccess = "true"))
+	bool bIsDead = false;
 
 protected:
 	UFUNCTION()
@@ -41,7 +44,10 @@ protected:
 	
 
 public:
-	bool IsDead() const { return CurrentHealth <= 0.0f; }
+	bool IsDead() const { return bIsDead; }
+
+	UFUNCTION(BlueprintPure, Category = "Health")
+	float GetCurrentHealth() const { return CurrentHealth; }
 
 	float HandleDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 

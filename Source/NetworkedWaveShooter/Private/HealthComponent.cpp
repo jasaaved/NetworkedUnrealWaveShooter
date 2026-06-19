@@ -8,12 +8,8 @@
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
-	// Set this component to be initialized when the game starts, and to be ticked every frame.  You can turn these features
-	// off to improve performance if you don't need them.
 	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
-
-	// ...
 }
 
 
@@ -22,7 +18,10 @@ void UHealthComponent::BeginPlay()
 {
 	Super::BeginPlay();
 
-	CurrentHealth = MaxHealth;
+	if (GetOwner() && GetOwner()->HasAuthority())
+	{
+		CurrentHealth = MaxHealth;
+	}
 
 	// update the HUD
 	OnDamaged.Broadcast(1.0f);
@@ -52,6 +51,7 @@ float UHealthComponent::HandleDamage(float Damage, struct FDamageEvent const& Da
 
 	if (CurrentHealth <= 0.0f)
 	{
+		bIsDead = true; //TODO make true when respawned for player
 		OnDeath.Broadcast();
 	}
 	OnRep_CurrentHealth();
