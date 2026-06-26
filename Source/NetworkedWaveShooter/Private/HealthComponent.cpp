@@ -8,7 +8,6 @@
 // Sets default values for this component's properties
 UHealthComponent::UHealthComponent()
 {
-	PrimaryComponentTick.bCanEverTick = true;
 	SetIsReplicatedByDefault(true);
 }
 
@@ -56,13 +55,5 @@ float UHealthComponent::HandleDamage(float Damage, struct FDamageEvent const& Da
 	}
 	OnRep_CurrentHealth();
 	return CurrentHealth;
-}
-
-// Called every frame
-void UHealthComponent::TickComponent(float DeltaTime, ELevelTick TickType, FActorComponentTickFunction* ThisTickFunction)
-{
-	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
-
-	// ...
 }
 
