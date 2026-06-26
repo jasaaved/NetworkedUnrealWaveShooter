@@ -51,6 +51,8 @@ public:
 
 	float HandleDamage(float Damage, struct FDamageEvent const& DamageEvent, AController* EventInstigator, AActor* DamageCauser);
 
+	FDamagedDelegate GetDamagedDelegate() const { return OnDamaged; }
+
 protected:
 	// Called when the game starts
 	virtual void BeginPlay() override;

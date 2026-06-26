@@ -95,10 +95,11 @@ void AShooterPlayerController::OnPossess(APawn* InPawn)
 
 		// subscribe to the pawn's delegates
 		ShooterCharacter->OnBulletCountUpdated.AddDynamic(this, &AShooterPlayerController::OnBulletCountUpdated);
-		ShooterCharacter->HealthComponent->OnDamaged.AddDynamic(this, &AShooterPlayerController::OnPawnDamaged);
+		const UHealthComponent* ShootersHC = ShooterCharacter->GetHealthComponent();
+		ShootersHC->GetDamagedDelegate().AddDynamic(this, &AShooterPlayerController::OnPawnDamaged);
 
 		// force update the life bar
-		ShooterCharacter->HealthComponent->OnDamaged.Broadcast(1.0f);
+		ShootersHC->OnDamaged.Broadcast(1.0f);
 	}
 }
 

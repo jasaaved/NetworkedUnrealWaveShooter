@@ -11,6 +11,7 @@ class AShooterWeapon;
 class UHealthComponent;
 class UInputAction;
 class UInputComponent;
+class UInventoryComponent;
 class UPawnNoiseEmitterComponent;
 
 DECLARE_DYNAMIC_MULTICAST_DELEGATE_TwoParams(FBulletCountUpdatedDelegate, int32, MagazineSize, int32, Bullets);
@@ -28,9 +29,6 @@ class NETWORKEDWAVESHOOTER_API AShooterCharacter : public ANetworkedWaveShooterC
 	/** AI Noise emitter component */
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category="Components", meta = (AllowPrivateAccess = "true"))
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter;
-public:
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UHealthComponent> HealthComponent;
 
 protected:
 

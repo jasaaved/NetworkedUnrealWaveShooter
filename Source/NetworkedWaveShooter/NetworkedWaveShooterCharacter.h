@@ -7,6 +7,7 @@
 #include "Logging/LogMacros.h"
 #include "NetworkedWaveShooterCharacter.generated.h"
 
+class UHealthComponent;
 class UInputComponent;
 class USkeletalMeshComponent;
 class UCameraComponent;
@@ -53,6 +54,10 @@ public:
 	ANetworkedWaveShooterCharacter();
 
 protected:
+	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
+	TObjectPtr<UHealthComponent> HealthComponent;
+
+protected:
 
 	/** Called from Input Actions for movement input */
 	void MoveInput(const FInputActionValue& Value);
@@ -89,6 +94,9 @@ public:
 
 	/** Returns first person camera component **/
 	UCameraComponent* GetFirstPersonCameraComponent() const { return FirstPersonCameraComponent; }
+
+	//** Returns the Health Component **//
+	const UHealthComponent* GetHealthComponent() const { return HealthComponent; }
 
 };
 

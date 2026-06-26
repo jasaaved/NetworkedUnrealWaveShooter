@@ -85,9 +85,6 @@ protected:
 	FTimerHandle DeathTimer;
 
 public:
-
-	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	TObjectPtr<UHealthComponent> HealthComponent;
 	/** Delegate called when this NPC dies */
 	FPawnDeathDelegate OnPawnDeath;
 
