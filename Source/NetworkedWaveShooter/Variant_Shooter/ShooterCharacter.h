@@ -30,7 +30,7 @@ class NETWORKEDWAVESHOOTER_API AShooterCharacter : public ANetworkedWaveShooterC
 	UPawnNoiseEmitterComponent* PawnNoiseEmitter;
 public:
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UHealthComponent* HealthComponent;
+	TObjectPtr<UHealthComponent> HealthComponent;
 
 protected:
 

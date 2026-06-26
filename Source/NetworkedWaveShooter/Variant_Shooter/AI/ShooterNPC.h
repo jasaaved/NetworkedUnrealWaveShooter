@@ -87,7 +87,7 @@ protected:
 public:
 
 	UPROPERTY(VisibleAnywhere, BlueprintReadOnly, Category = "Components")
-	UHealthComponent* HealthComponent;
+	TObjectPtr<UHealthComponent> HealthComponent;
 	/** Delegate called when this NPC dies */
 	FPawnDeathDelegate OnPawnDeath;
 
