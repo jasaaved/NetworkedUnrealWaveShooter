@@ -8,7 +8,6 @@
 #include "ShooterCharacter.generated.h"
 
 class AShooterWeapon;
-class UHealthComponent;
 class UInputAction;
 class UInputComponent;
 class UInventoryComponent;

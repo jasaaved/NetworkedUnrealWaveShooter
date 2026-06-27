@@ -10,7 +10,6 @@
 DECLARE_DYNAMIC_MULTICAST_DELEGATE(FPawnDeathDelegate);
 
 class AShooterWeapon;
-class UHealthComponent;
 
 /**
  *  A simple AI-controlled shooter game NPC
